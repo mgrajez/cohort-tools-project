@@ -4,40 +4,37 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5005";
 
-
 function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [username, setUserName] = useState("");
   const [errorMessage, setErrorMessage] = useState(undefined);
 
   const navigate = useNavigate();
 
-  
   const handleEmail = (e) => setEmail(e.target.value);
   const handlePassword = (e) => setPassword(e.target.value);
-  const handleName = (e) => setName(e.target.value);
+  const handleName = (e) => setUserName(e.target.value);
 
-  
   const handleSignupSubmit = (e) => {
     e.preventDefault();
     // Create an object representing the request body
-    const requestBody = { email, password, name };
+    const requestBody = { password, email, username };
 
     // Make an axios request to the API
     // If POST request is successful redirect to login page
     // If the request resolves with an error, set the error message in the state
-    axios.post(`${API_URL}/auth/signup`, requestBody)
+    axios
+      .post(`${API_URL}/api/auth/signup`, requestBody)
       .then(() => {
         navigate("/login");
       })
       .catch((error) => {
         const errorDescription = error.response.data.message;
         setErrorMessage(errorDescription);
-      })
+      });
   };
 
-  
   return (
     <div className="CohortCreatePage p-8 pb-16 mb-10 mt-10 rounded-lg shadow-md flex flex-col h-full relative w-full max-w-3xl mx-auto">
       <div className="flex justify-center bg-white items-center mb-4 pt-8 absolute top-0 left-0 right-0 py-2 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 border-b border-gray-300 shadow-sm"></div>
@@ -82,7 +79,7 @@ function SignupPage() {
           autoComplete="off"
         />
 
-<label
+        <label
           htmlFor="name"
           className="text-gray-600 text-left ml-1 -mb-2 text-l font-bold"
         >
@@ -92,11 +89,11 @@ function SignupPage() {
           type="text"
           name="name"
           id="name"
-          value={name}
+          value={username}
           onChange={handleName}
           className="border rounded p-2 w-full mb-6"
           autoComplete="off"
-        />        
+        />
 
         <button
           type="submit"
@@ -111,7 +108,7 @@ function SignupPage() {
       <p className="mt-10 mb-2">Already have an account?</p>
       <Link to={"/login"}> Log in</Link>
     </div>
-  )
+  );
 }
 
 export default SignupPage;

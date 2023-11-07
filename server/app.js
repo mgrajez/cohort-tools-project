@@ -4,6 +4,14 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 
+require("dotenv").config();
+
+const {
+  errorHandler,
+  notFoundHandler,
+} = require("./errorHandling/errorHandling");
+const { isAuthenticated } = require("./middlewares/authMiddlewares");
+
 const PORT = 5005;
 
 mongoose
@@ -19,6 +27,7 @@ const DataStudents = require("./students.json");
 
 const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
+const User = require("./models/User.model");
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
@@ -38,13 +47,14 @@ app.use(cookieParser());
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
 });
+
+app.use("/api/auth", require("./routes/auth.routes"));
+app.use(isAuthenticated);
+app.use("api/users", require("./routes/users.routes"));
+
 app.use("/api/cohorts", require("./routes/cohort.routes"));
 app.use("/api/students", require("./routes/student.routes"));
 
-const {
-  errorHandler,
-  notFoundHandler,
-} = require("./errorHandling/errorHandling");
 app.use(errorHandler);
 app.use(notFoundHandler);
 

@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/auth.context";
 
-const API_URL = "http://localhost:5005";
+const API_URL = "http://localhost:5005/api/auth";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -17,24 +17,22 @@ function LoginPage() {
   const handleEmail = (e) => setEmail(e.target.value);
   const handlePassword = (e) => setPassword(e.target.value);
 
-  const handleLoginSubmit = (e) => {
+  async function handleLoginSubmit(e) {
     e.preventDefault();
     const requestBody = { email, password };
 
-    axios
-      .post(`${API_URL}/auth/login`, requestBody)
-      .then((response) => {
-        console.log("JWT token", response.data.authToken);
-
-        storeToken(response.data.authToken);
-        authenticateUser();
-        navigate("/");
-      })
-      .catch((error) => {
-        const errorDescription = error.response.data.message;
-        setErrorMessage(errorDescription);
-      });
-  };
+    try {
+      const response = await axios.post(`${API_URL}/login`, requestBody);
+      console.log("JWT token", response.data.authToken);
+      storeToken("authToken", response.data.token);
+      /* localStorage.setItem("authToken", response.data.token); */
+      await authenticateUser();
+      navigate("/");
+    } catch (error) {
+      const errorDescription = error.response.data.message;
+      setErrorMessage(errorDescription);
+    }
+  }
 
   return (
     <div className="CohortCreatePage p-8 pb-16 mb-10 mt-10 rounded-lg shadow-md flex flex-col h-full relative w-full max-w-3xl mx-auto">
